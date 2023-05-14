@@ -8,8 +8,44 @@
         d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
         Title="GUS DBW Viewer" Height="450" Width="800">
     
-    <Grid>
-        <TextBlock Text="{Binding Name}"></TextBlock>
+    <Grid ShowGridLines="True">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        
+        <TextBlock Grid.Column="0" 
+                   Grid.Row="0"
+                   Margin="5"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Center"
+                   Text="{Binding AppHeader}"/>
+        
+        <TextBox Grid.Row="0" 
+                 Grid.Column="1"
+                 Margin="5"
+                 Tag="Search..."/>
+        
+        <DataGrid Grid.Row="1" 
+                  Grid.Column="0" 
+                  Grid.ColumnSpan="2"
+                  Margin="10"
+                  ColumnWidth="*"
+                  ItemsSource="{Binding AreaData}"
+                  AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Id" Binding="{Binding Id}"/>
+                <DataGridTextColumn Header="Nazwa" Binding="{Binding Name}"/>
+                <DataGridTextColumn Header="Id nadrzedny element" Binding="{Binding PrecedentElementId}"/>
+                <DataGridTextColumn Header="Id poziom" Binding="{Binding LevelId}"/>
+                <DataGridTextColumn Header="Nazwa poziomu" Binding="{Binding LevelName}"/>
+                <DataGridCheckBoxColumn Header="Czy zmienne" Binding="{Binding IsChangeable}"/>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
     
 </Window>
