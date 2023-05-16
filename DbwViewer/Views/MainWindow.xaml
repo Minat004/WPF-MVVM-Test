@@ -82,6 +82,27 @@
                   CanUserAddRows="False"
                   CanUserDeleteRows="False"
                   CanUserSortColumns="False">
+            
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding LevelName}" Value="Temat">
+                            <Setter Property="Background" Value="Green"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding LevelName}" Value="Zakres informacyjny">
+                            <Setter Property="Background" Value="Red"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding LevelName}" Value="Dziedzina">
+                            <Setter Property="Background" Value="Yellow"/>
+                        </DataTrigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="Blue"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+            
             <DataGrid.Columns>
                 <DataGridTextColumn Width="Auto" 
                                     Header="Id" 
