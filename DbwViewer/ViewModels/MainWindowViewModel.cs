@@ -90,7 +90,7 @@ public partial class MainWindowViewModel : ObservableObject
 
     public ICollectionView<Area> AreaView { get; set; }
 
-    private IEnumerable<Area> GetAreas()
+    private static IEnumerable<Area> GetAreas()
     {
         using (var client = new HttpClient())
         {

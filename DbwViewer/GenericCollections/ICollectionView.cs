@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace DbwViewer.GenericCollections;
 
-public interface ICollectionView<out T> : IEnumerable<T>, ICollectionView
+public interface ICollectionView<T> : IEnumerable<T>, ICollectionView
 {
     
 }

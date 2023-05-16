@@ -36,12 +36,12 @@
                  Grid.Column="1"
                  Margin="10"
                  Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                 aui:WatermarkExtension.Watermark="Search..."
-                 />
+                 aui:WatermarkExtension.Watermark="Search..."/>
+        
+        <!-- Border panel -->
         
         <Border Grid.Row="1" 
                 Grid.Column="0"
-                x:Name="Order"
                 Padding="5"
                 Margin="10,0,10,10"
                 Background="Beige">
@@ -57,9 +57,10 @@
             </StackPanel>
         </Border>
         
+        <!-- Filter panel -->
+        
         <Border Grid.Row="1" 
                 Grid.Column="1"
-                x:Name="Filter"
                 Padding="5"
                 Margin="10,0,10,10"
                 Background="Beige">
