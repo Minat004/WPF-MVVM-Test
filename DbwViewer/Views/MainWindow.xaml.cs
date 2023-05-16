@@ -1,6 +1,6 @@
 ﻿using DbwViewer.ViewModels;
 
-namespace DbwViewer
+namespace DbwViewer.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

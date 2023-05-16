@@ -1,4 +1,4 @@
-﻿<Window x:Class="DbwViewer.MainWindow"
+﻿<Window x:Class="DbwViewer.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -80,7 +80,8 @@
                   ItemsSource="{Binding AreaView, UpdateSourceTrigger=PropertyChanged}"
                   AutoGenerateColumns="False"
                   CanUserAddRows="False"
-                  CanUserDeleteRows="False">
+                  CanUserDeleteRows="False"
+                  CanUserSortColumns="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Width="Auto" 
                                     Header="Id" 
