@@ -1,4 +1,5 @@
-﻿using DbwViewer.ViewModels;
+﻿using System.Windows;
+using DbwViewer.ViewModels;
 
 namespace DbwViewer.Views
 {
@@ -11,6 +12,11 @@ namespace DbwViewer.Views
         {
             DataContext = new MainWindowViewModel();
             InitializeComponent();
+        }
+
+        private async void Window_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            await ((MainWindowViewModel)DataContext).LoadAreasAsync();
         }
     }
 }

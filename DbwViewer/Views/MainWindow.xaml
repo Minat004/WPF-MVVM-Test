@@ -77,12 +77,12 @@
                   Grid.Column="0" 
                   Grid.ColumnSpan="2"
                   Margin="10,0,10,10"
-                  ColumnWidth="Auto"
                   ItemsSource="{Binding AreaView, UpdateSourceTrigger=PropertyChanged}"
                   AutoGenerateColumns="False"
                   CanUserAddRows="False"
                   CanUserDeleteRows="False"
-                  CanUserSortColumns="False">
+                  CanUserSortColumns="False"
+                  Loaded="Window_OnLoaded">
             
             <DataGrid.RowStyle>
                 <Style TargetType="DataGridRow">

@@ -11,180 +11,209 @@ namespace DbwViewer.GenericCollections;
 
 public class ObservableCollectionView<T>: ICollectionView<T>, IEditableCollectionView<T>
 {
-    private readonly ListCollectionView collectionView;
+    private readonly ListCollectionView _collectionView;
 
     public ObservableCollectionView(ListCollectionView collectionView)
     {
-        this.collectionView = collectionView ?? throw new ArgumentNullException(nameof(collectionView));
+        _collectionView = collectionView ?? throw new ArgumentNullException(nameof(collectionView));
+    }
+    
+    public ObservableCollectionView(IEnumerable<T> source)
+    {
+        _collectionView = (ListCollectionView)CollectionViewSource.GetDefaultView(source);
+        
+        if (_collectionView is null)
+        {
+            throw new ArgumentException(null, nameof(source));
+        }
     }
 
     public CultureInfo Culture
     {
-        get => collectionView.Culture;
-        set => collectionView.Culture = value;
+        get => _collectionView.Culture;
+        set => _collectionView.Culture = value;
     }
 
-    public IEnumerable SourceCollection => collectionView.SourceCollection;
+    public IEnumerable SourceCollection => _collectionView.SourceCollection;
 
-    public Predicate<object> Filter
+    private Predicate<T>? _filter;
+    public Predicate<T>? Filter
     {
-        get => collectionView.Filter;
-        set => collectionView.Filter = value;
+        get => _filter;
+        set
+        {
+            _filter = value;
+
+            Predicate<object> o = null!;
+            
+            if (value != null!)
+            {
+                o = x => value((T)x);
+            }
+
+            ((ICollectionView)this).Filter = o;
+        }
     }
 
-    public bool CanFilter => collectionView.CanFilter;
+    Predicate<object> ICollectionView.Filter
+    {
+        get => _collectionView.Filter;
+        set => _collectionView.Filter = value;
+    }
 
-    public SortDescriptionCollection SortDescriptions => collectionView.SortDescriptions;
+    public bool CanFilter => _collectionView.CanFilter;
 
-    public bool CanSort => collectionView.CanSort;
+    public SortDescriptionCollection SortDescriptions => _collectionView.SortDescriptions;
 
-    public bool CanGroup => collectionView.CanGroup;
+    public bool CanSort => _collectionView.CanSort;
 
-    public ObservableCollection<GroupDescription> GroupDescriptions => collectionView.GroupDescriptions!;
+    public bool CanGroup => _collectionView.CanGroup;
 
-    public ReadOnlyObservableCollection<object> Groups => collectionView.Groups!;
+    public ObservableCollection<GroupDescription> GroupDescriptions => _collectionView.GroupDescriptions!;
 
-    public bool IsEmpty => collectionView.IsEmpty;
+    public ReadOnlyObservableCollection<object> Groups => _collectionView.Groups!;
 
-    public object CurrentItem => collectionView.CurrentItem;
+    public bool IsEmpty => _collectionView.IsEmpty;
 
-    public int CurrentPosition => collectionView.CurrentPosition;
+    public object CurrentItem => _collectionView.CurrentItem;
 
-    public bool IsCurrentAfterLast => collectionView.IsCurrentAfterLast;
+    public int CurrentPosition => _collectionView.CurrentPosition;
 
-    public bool IsCurrentBeforeFirst => collectionView.IsCurrentBeforeFirst;
+    public bool IsCurrentAfterLast => _collectionView.IsCurrentAfterLast;
+
+    public bool IsCurrentBeforeFirst => _collectionView.IsCurrentBeforeFirst;
 
     public NewItemPlaceholderPosition NewItemPlaceholderPosition
     {
-        get => collectionView.NewItemPlaceholderPosition;
-        set => collectionView.NewItemPlaceholderPosition = value;
+        get => _collectionView.NewItemPlaceholderPosition;
+        set => _collectionView.NewItemPlaceholderPosition = value;
     }
 
-    public bool CanAddNew => collectionView.CanAddNew;
+    public bool CanAddNew => _collectionView.CanAddNew;
 
-    public bool IsAddingNew => collectionView.IsAddingNew;
+    public bool IsAddingNew => _collectionView.IsAddingNew;
 
-    public object CurrentAddItem => collectionView.CurrentAddItem;
+    public object CurrentAddItem => _collectionView.CurrentAddItem;
 
-    public bool CanRemove => collectionView.CanRemove;
+    public bool CanRemove => _collectionView.CanRemove;
 
-    public bool CanCancelEdit => collectionView.CanCancelEdit;
+    public bool CanCancelEdit => _collectionView.CanCancelEdit;
 
-    public bool IsEditingItem => collectionView.IsEditingItem;
+    public bool IsEditingItem => _collectionView.IsEditingItem;
 
-    public object CurrentEditItem => collectionView.CurrentEditItem;
+    public object CurrentEditItem => _collectionView.CurrentEditItem;
 
     public event NotifyCollectionChangedEventHandler? CollectionChanged
     {
-        add => ((ICollectionView) collectionView).CollectionChanged += value;
-        remove => ((ICollectionView) collectionView).CollectionChanged -= value;
+        add => ((ICollectionView) _collectionView).CollectionChanged += value;
+        remove => ((ICollectionView) _collectionView).CollectionChanged -= value;
     }
 
     public event CurrentChangingEventHandler CurrentChanging
     {
-        add => ((ICollectionView) collectionView).CurrentChanging += value;
-        remove => ((ICollectionView) collectionView).CurrentChanging -= value;
+        add => ((ICollectionView) _collectionView).CurrentChanging += value;
+        remove => ((ICollectionView) _collectionView).CurrentChanging -= value;
     }
 
     public event EventHandler CurrentChanged
     {
-        add => ((ICollectionView) collectionView).CurrentChanged += value;
-        remove => ((ICollectionView) collectionView).CurrentChanged -= value;
+        add => ((ICollectionView) _collectionView).CurrentChanged += value;
+        remove => ((ICollectionView) _collectionView).CurrentChanged -= value;
     }
 
     public IEnumerator<T> GetEnumerator()
     {
-        return (IEnumerator<T>) ((ICollectionView) collectionView).GetEnumerator();
+        return (IEnumerator<T>) ((ICollectionView) _collectionView).GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
     {
-        return ((ICollectionView) collectionView).GetEnumerator();
+        return ((ICollectionView) _collectionView).GetEnumerator();
     }
 
     public bool Contains(object item)
     {
-        return collectionView.Contains(item);
+        return _collectionView.Contains(item);
     }
 
     public void Refresh()
     {
-        collectionView.Refresh();
+        _collectionView.Refresh();
     }
 
     public IDisposable DeferRefresh()
     {
-        return collectionView.DeferRefresh();
+        return _collectionView.DeferRefresh();
     }
 
     public bool MoveCurrentToFirst()
     {
-        return collectionView.MoveCurrentToFirst();
+        return _collectionView.MoveCurrentToFirst();
     }
 
     public bool MoveCurrentToLast()
     {
-        return collectionView.MoveCurrentToLast();
+        return _collectionView.MoveCurrentToLast();
     }
 
     public bool MoveCurrentToNext()
     {
-        return collectionView.MoveCurrentToNext();
+        return _collectionView.MoveCurrentToNext();
     }
 
     public bool MoveCurrentToPrevious()
     {
-        return collectionView.MoveCurrentToPrevious();
+        return _collectionView.MoveCurrentToPrevious();
     }
 
     public bool MoveCurrentTo(object item)
     {
-        return collectionView.MoveCurrentTo(item);
+        return _collectionView.MoveCurrentTo(item);
     }
 
     public bool MoveCurrentToPosition(int position)
     {
-        return collectionView.MoveCurrentToPosition(position);
+        return _collectionView.MoveCurrentToPosition(position);
     }
 
     public object AddNew()
     {
-        return collectionView.AddNew();
+        return _collectionView.AddNew();
     }
 
     public void CommitNew()
     {
-        collectionView.CommitNew();
+        _collectionView.CommitNew();
     }
 
     public void CancelNew()
     {
-        collectionView.CancelNew();
+        _collectionView.CancelNew();
     }
 
     public void RemoveAt(int index)
     {
-        collectionView.RemoveAt(index);
+        _collectionView.RemoveAt(index);
     }
 
     public void Remove(object item)
     {
-        collectionView.Remove(item);
+        _collectionView.Remove(item);
     }
 
     public void EditItem(object item)
     {
-        collectionView.EditItem(item);
+        _collectionView.EditItem(item);
     }
 
     public void CommitEdit()
     {
-        collectionView.CommitEdit();
+        _collectionView.CommitEdit();
     }
 
     public void CancelEdit()
     {
-        collectionView.CancelEdit();
+        _collectionView.CancelEdit();
     }
     
 }
