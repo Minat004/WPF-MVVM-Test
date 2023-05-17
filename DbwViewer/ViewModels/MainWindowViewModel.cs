@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
-using System.Windows.Data;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DbwViewer.GenericCollections;
 using DbwViewer.Models;
@@ -26,15 +26,6 @@ public partial class MainWindowViewModel : ObservableObject
     
     public MainWindowViewModel()
     {
-        AreaList = new ObservableCollection<Area>(GetAreas());
-
-        var view = (ListCollectionView)CollectionViewSource.GetDefaultView(AreaList);
-
-        AreaView = new ObservableCollectionView<Area>(view)
-        {
-            Filter = OnFilterArea,
-        };
-
         AreaPropertyList = new ObservableCollection<string>(areaPropertyDict.Values.ToList());
 
         FilterSelectedItem = AreaPropertyList[1];
@@ -61,7 +52,7 @@ public partial class MainWindowViewModel : ObservableObject
     [ObservableProperty] 
     private ListSortDirection directionSelectedItem;
 
-    partial void OnOrderSelectedItemChanged(string? value)
+    partial void OnOrderSelectedItemChanged(string value)
     {
         var property = areaPropertyDict.FirstOrDefault(x => 
             x.Value == value).Key;
@@ -77,6 +68,11 @@ public partial class MainWindowViewModel : ObservableObject
         OnOrderArea(property, value);
     }
 
+    partial void OnFilterSelectedItemChanged(string value)
+    {
+        AreaView.Refresh();
+    }
+
     public ObservableCollection<string> AreaPropertyList { get; set; }
 
     public ObservableCollection<ListSortDirection> Directions { get; set; }
@@ -86,9 +82,20 @@ public partial class MainWindowViewModel : ObservableObject
         AreaView.Refresh();
     }
 
-    private ObservableCollection<Area> AreaList { get; set; }
+    [ObservableProperty] 
+    private ObservableCollectionView<Area> areaView = new(new List<Area>());
 
-    public ICollectionView<Area> AreaView { get; set; }
+    partial void OnAreaViewChanged(ObservableCollectionView<Area> value)
+    {
+        AreaView.Refresh();
+    }
+
+    public async Task LoadAreasAsync()
+    {
+        AreaView = await GetAllAreasAsync();
+        AreaView.Filter = OnFilterArea;
+        OnOrderArea(AreaPropertyList[0], Directions[0]);
+    }
 
     private static IEnumerable<Area> GetAreas()
     {
@@ -101,6 +108,19 @@ public partial class MainWindowViewModel : ObservableObject
             return JsonConvert.DeserializeObject<IEnumerable<Area>>(responseBody.Result)!;
         }
     }
+    
+    private static async Task<ObservableCollectionView<Area>> GetAllAreasAsync()
+    {
+        using (var client = new HttpClient())
+        {
+            var response = await client.GetAsync(@"https://api-dbw.stat.gov.pl/api/1.1.0/area/area-area?lang=pl");
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            var list = JsonConvert.DeserializeObject<IEnumerable<Area>>(responseBody)!;
+
+            return new ObservableCollectionView<Area>(list);
+        }
+    }
 
     private void OnOrderArea(string? property, ListSortDirection direction)
     {
@@ -109,10 +129,8 @@ public partial class MainWindowViewModel : ObservableObject
         AreaView.Refresh();
     }
 
-    private bool OnFilterArea(object o)
+    private bool OnFilterArea(Area area)
     {
-        var area = o as Area;
-
         if (SearchText is null or "")
         {
             return true;
@@ -120,32 +138,32 @@ public partial class MainWindowViewModel : ObservableObject
 
         if (FilterSelectedItem == areaPropertyDict[nameof(Area.Id)])
         {
-            return area!.Id.ToString().ToLower().Contains(SearchText.ToLower().Trim());
+            return area.Id.ToString().ToLower().Contains(SearchText.ToLower().Trim());
         }
         
         if (FilterSelectedItem == areaPropertyDict[nameof(Area.Name)])
         {
-            return area!.Name!.ToLower().Contains(SearchText.ToLower().Trim());
+            return area.Name!.ToLower().Contains(SearchText.ToLower().Trim());
         }
         
         if (FilterSelectedItem == areaPropertyDict[nameof(Area.PrecedentElementId)])
         {
-            return area!.PrecedentElementId.ToString().ToLower().Contains(SearchText.ToLower().Trim());
+            return area.PrecedentElementId.ToString().ToLower().Contains(SearchText.ToLower().Trim());
         }
         
         if (FilterSelectedItem == areaPropertyDict[nameof(Area.LevelId)])
         {
-            return area!.LevelId.ToString().ToLower().Contains(SearchText.ToLower().Trim());
+            return area.LevelId.ToString().ToLower().Contains(SearchText.ToLower().Trim());
         }
         
         if (FilterSelectedItem == areaPropertyDict[nameof(Area.LevelName)])
         {
-            return area!.LevelName!.ToLower().Contains(SearchText.ToLower().Trim());
+            return area.LevelName!.ToLower().Contains(SearchText.ToLower().Trim());
         }
         
         if (FilterSelectedItem == areaPropertyDict[nameof(Area.IsChangeable)])
         {
-            return area!.IsChangeable.ToString().ToLower().Contains(SearchText.ToLower().Trim());
+            return area.IsChangeable.ToString().ToLower().Contains(SearchText.ToLower().Trim());
         }
 
         return false;
