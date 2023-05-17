@@ -14,7 +14,7 @@ namespace DbwViewer.Views
             InitializeComponent();
         }
 
-        private async void Window_OnLoaded(object sender, RoutedEventArgs e)
+        private async void DataGrid_OnLoaded(object sender, RoutedEventArgs e)
         {
             await ((MainWindowViewModel)DataContext).LoadAreasAsync();
         }

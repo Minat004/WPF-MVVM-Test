@@ -82,7 +82,7 @@
                   CanUserAddRows="False"
                   CanUserDeleteRows="False"
                   CanUserSortColumns="False"
-                  Loaded="Window_OnLoaded">
+                  Loaded="DataGrid_OnLoaded">
             
             <DataGrid.RowStyle>
                 <Style TargetType="DataGridRow">
